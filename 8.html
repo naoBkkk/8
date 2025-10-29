@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message Board</title>
+<style>
+body {
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.header-img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  padding: 5px;
+}
+
+input[type="text"] {
+  width: 100%;
+  margin-bottom: 10px;
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  padding: 5px;
+}
+
+button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+.post {
+  background-color: #111;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #333;
+  text-align: left;
+}
+
+.post img {
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+.username {
+  color: #0f0;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <img src="data:image/jpeg;base64,REPLACE_WITH_YOUR_BASE64_IMAGE" alt="Header Image" class="header-img">
+  <h1>Welcome to the Message Board</h1>
+
+  <div class="post-form">
+    <textarea id="messageInput" placeholder="Write your message..."></textarea>
+    <input type="text" id="imageInput" placeholder="Optional image URL">
+    <button onclick="postMessage()">Send</button>
+  </div>
+
+  <div id="posts"></div>
+</div>
+
+<script>
+const postsContainer = document.getElementById("posts");
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+renderPosts();
+
+function randomUsername() {
+  const adjectives = ["Crazy","Happy","Lazy","Bright","Silent"];
+  const nouns = ["Cat","Dog","Fox","Lion","Tiger"];
+  return adjectives[Math.floor(Math.random()*adjectives.length)] + nouns[Math.floor(Math.random()*nouns.length)];
+}
+
+function postMessage() {
+  const messageInput = document.getElementById("messageInput");
+  const imageInput = document.getElementById("imageInput");
+  if(!messageInput.value) return;
+  const post = {
+    username: randomUsername(),
+    text: messageInput.value,
+    image: imageInput.value || null,
+    timestamp: new Date().toLocaleString()
+  };
+  posts.push(post);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  messageInput.value = "";
+  imageInput.value = "";
+  renderPosts();
+}
+
+function renderPosts() {
+  postsContainer.innerHTML = "";
+  for(let post of posts){
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+    postDiv.innerHTML = `
+      <div class="username">${post.username}</div>
+      <div class="time">${post.timestamp}</div>
+      <div class="text">${post.text}</div>
+      ${post.image ? `<img src="${post.image}" alt="Post image">` : ""}
+    `;
+    postsContainer.prepend(postDiv);
+  }
+}
+</script>
+</body>
+</html>
